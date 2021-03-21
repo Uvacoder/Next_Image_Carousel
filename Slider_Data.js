@@ -33,7 +33,7 @@ export const SliderData = [
     height: 1500,
     access_mode: 'public',
     url:
-      'https://res.cloudinary.com/hackit-africa/image/upload/v1603303047/f9k6uwefwsdwbiano1tu.jpg',
+      'https://res.cloudinary.com/hackit-africa/image/upload/v1603272287/isg8ccudsykwejzlb5xs.jpg',
     secure_url:
       'https://res.cloudinary.com/hackit-africa/image/upload/v1611138708/Personal/IMG_20190517_122939_010.jpg',
   },
