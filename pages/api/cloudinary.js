@@ -1,8 +1,5 @@
-import cloudinary from 'cloudinary';
 import { getAllImages } from '../../utils/cloudinary';
 
-//Use the cloudinary configuration file
-require('../../utils/cloudinary');
 
 async function handler(req, res) {
   if (req.method === 'GET') {
