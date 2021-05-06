@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { wrap } from 'popmotion';
 import styles from '@/styles/Slider.module.css';
 import Image from 'next/image';
-import image from 'next/image';
 
 let images = [];
 
@@ -13,10 +12,10 @@ fetch('/api/cloudinary')
   .then((response) => response.json())
   .then((data) => {
     images = data.map((image) => {
-      console.log(image);
+      // console.log("In fetch", image);
       return image.url;
     });
-    console.log(images);
+    // console.log(images);
   });
 
 const variants = {
@@ -53,20 +52,23 @@ export const ImageSlider = () => {
     setPage([page + newDirection, newDirection]);
   };
 
+  const src = images.length > 0 ? images[imageIndex] : `/amazon.jpg`;
+
   return (
     <>
       <AnimatePresence initial={false} custom={direction}>
-        <motion.img
+        <motion.div
           className={styles.img}
           key={page}
-          src={images[imageIndex]}
           custom={direction}
           variants={variants}
           initial='enter'
           animate='center'
           exit='exit'
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
           transition={{
-            x: { type: 'spring', stiffness: 300, damping: 10 },
+            x: { type: 'spring', stiffness: 400, damping: 100 },
             opacity: { duration: 0.2 },
           }}
           drag='x'
@@ -81,14 +83,31 @@ export const ImageSlider = () => {
               paginate(-1);
             }
           }}
-        />
+        >
+          <Image
+            src={src}
+            alt='Picture of the author'
+            width={600}
+            height={600}
+          />
+        </motion.div>
       </AnimatePresence>
-      <div className={styles.next} onClick={() => paginate(1)}>
+      <motion.div
+        className={styles.next}
+        onClick={() => paginate(1)}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+      >
         {'‣'}
-      </div>
-      <div className={styles.prev} onClick={() => paginate(-1)}>
+      </motion.div>
+      <motion.div
+        className={styles.prev}
+        onClick={() => paginate(-1)}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+      >
         {'‣'}
-      </div>
+      </motion.div>
     </>
   );
 };

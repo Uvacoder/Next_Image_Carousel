@@ -17,7 +17,7 @@
 }
 
 .next {
-  right: 10px;
+  right: 20px;
 }
 
 .prev {
@@ -27,8 +27,8 @@
 
 .img {
   position: absolute;
-  height: 600px;
-  width: 1000px;
+  text-align: center;
+
 }
 
 .refresh {
