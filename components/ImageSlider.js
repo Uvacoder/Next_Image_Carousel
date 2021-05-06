@@ -1,59 +1,95 @@
-import React, { useState, useEffect } from 'react';
-
-//import { SliderData } from '../Slider_Data';
-import { FaArrowAltCircleRight, FaArrowAltCircleLeft } from 'react-icons/fa';
+import * as React from 'react';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { wrap } from 'popmotion';
+import styles from '@/styles/Slider.module.css';
 import Image from 'next/image';
+import image from 'next/image';
 
-const ImageSlider = ({ slides }) => {
-  const [sliderData, setSliderData] = useState([]);
-  const [current, setCurrent] = useState(0);
-  const length = slides.length;
+let images = [];
 
-  //  UseEffect to fetch all images and run only when the component mounts
-  useEffect(() => {
-    //fetch data from the api on component mounting
-    fetch('/api/cloudinary')
-      .then((response) => response.json())
-      .then((data) => {
-        setSliderData(data);
-        console.log(data);
-      });
-  }, []);
+//fetch data from the api on component mounting
+fetch('/api/cloudinary')
+  .then((response) => response.json())
+  .then((data) => {
+    images = data.map((image) => {
+      console.log(image);
+      return image.url;
+    });
+    console.log(images);
+  });
 
-  // Function to move to the next slide/image
-  const nextSlide = () => {
-    setCurrent(current === length - 1 ? 0 : current + 1);
+const variants = {
+  enter: (direction) => {
+    return {
+      x: direction > 0 ? 1000 : -1000,
+      opacity: 0,
+    };
+  },
+  center: {
+    zIndex: 1,
+    x: 0,
+    opacity: 1,
+  },
+  exit: (direction) => {
+    return {
+      zIndex: 0,
+      x: direction < 0 ? 1000 : -1000,
+      opacity: 0,
+    };
+  },
+};
+
+const swipeConfidenceThreshold = 10000;
+const swipePower = (offset, velocity) => {
+  return Math.abs(offset) * velocity;
+};
+
+export const ImageSlider = () => {
+  const [[page, direction], setPage] = useState([0, 0]);
+  const imageIndex = wrap(0, images.length, page);
+
+  const paginate = (newDirection) => {
+    setPage([page + newDirection, newDirection]);
   };
-
-  // Function to move to the previous slide/image
-  const prevSlide = () => {
-    setCurrent(current === 0 ? length - 1 : current - 1);
-  };
-
-  if (!Array.isArray(slides) || slides.length <= 0) {
-    return null;
-  }
 
   return (
-    <section className='slider'>
-      {/* react-icons */}
-      <FaArrowAltCircleLeft className='left-arrow' onClick={prevSlide} />
+    <>
+      <AnimatePresence initial={false} custom={direction}>
+        <motion.img
+          className={styles.img}
+          key={page}
+          src={images[imageIndex]}
+          custom={direction}
+          variants={variants}
+          initial='enter'
+          animate='center'
+          exit='exit'
+          transition={{
+            x: { type: 'spring', stiffness: 300, damping: 10 },
+            opacity: { duration: 0.2 },
+          }}
+          drag='x'
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={1}
+          onDragEnd={(e, { offset, velocity }) => {
+            const swipe = swipePower(offset.x, velocity.x);
 
-      <FaArrowAltCircleRight className='right-arrow' onClick={nextSlide} />
-
-      {sliderData.map((slide, index) => {
-        return (
-          <div
-            className={index === current ? 'slide active' : 'slide'}
-            key={index}
-          >
-            {index === current && (
-              <Image src={slide.url} alt={slide.url} width={600} height={600} />
-            )}
-          </div>
-        );
-      })}
-    </section>
+            if (swipe < -swipeConfidenceThreshold) {
+              paginate(1);
+            } else if (swipe > swipeConfidenceThreshold) {
+              paginate(-1);
+            }
+          }}
+        />
+      </AnimatePresence>
+      <div className={styles.next} onClick={() => paginate(1)}>
+        {'‣'}
+      </div>
+      <div className={styles.prev} onClick={() => paginate(-1)}>
+        {'‣'}
+      </div>
+    </>
   );
 };
 

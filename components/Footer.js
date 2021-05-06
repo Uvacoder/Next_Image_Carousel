@@ -1,21 +1,10 @@
-import styled from 'styled-components';
 import Link from 'next/link';
+import styles from '@/styles/Footer.module.css';
 
-const FooterSection = styled.div`
-  background: #000;
-  color: #fff;
-  height: 60px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-const Footer = () => {
+export default function Footer() {
   return (
-    <FooterSection>
-      <p>Musebecodes 2021 All Rights Reserved</p>
-    </FooterSection>
+    <footer className={styles.footer}>
+      <p>Copyright &copy; Musebecodes 2021</p>
+    </footer>
   );
-};
-
-export default Footer;
+}
